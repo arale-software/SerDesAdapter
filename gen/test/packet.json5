@@ -5,20 +5,20 @@
             "KeyName1": {
                 "type": "uint8_t",
                 "size": 1,
-                "bytes_order": "little_endian",
+                "bytes_order": "littleEndian",
                 "init_value": 11
             },
             "KeyName2": {
                 "type": "float",
                 "size": 16,
-                "bytes_order": "little_endian",
+                "bytes_order": "littleEndian",
                 "init_value": 33.33
             },
             "KeyName3": {
                 "type": "CRC8T1",
                 "size": 1,
-                "bytes_order": "little_endian",
-                "start": "KeyName1",
+                "bytes_order": "littleEndian",
+                "begin": "KeyName1",
                 "end": "KeyName2",
                 "polyCRC": 0xFF,
                 "initCRC": 0xAB
