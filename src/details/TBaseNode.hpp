@@ -21,14 +21,17 @@
 /// Setters and getters are more preferable then operators
 /// Use init function after ctor for proper node usege
 class TBaseNode {
+ public:
+  enum class EBytesOrder : bool { bigEndian = 0, littleEndian = 1 };
+
  protected:
-  bool m_littleEndian{true};
+  EBytesOrder m_littleEndian{EBytesOrder::littleEndian};
   size_t m_arraySize{1};
   size_t m_countBytes{1};
 
  public:
   TBaseNode() = delete;
-  TBaseNode(bool littleEndian, const size_t& arraySize, const size_t& countBytes) : m_littleEndian{littleEndian}, m_arraySize{arraySize}, m_countBytes{countBytes} {};
+  TBaseNode(EBytesOrder littleEndian, const size_t& arraySize, const size_t& countBytes) : m_littleEndian{littleEndian}, m_arraySize{arraySize}, m_countBytes{countBytes} {};
 
   virtual ~TBaseNode() = default;
   TBaseNode(const TBaseNode& other) = default;

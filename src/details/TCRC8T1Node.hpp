@@ -28,7 +28,7 @@ class TCRC8T1Node : public TScalarNode<uint8_t> {
 
  public:
   TCRC8T1Node() = delete;
-  TCRC8T1Node(const uint8_t& crcpoly = 0x00, const uint8_t& crcinit = 0x00, bool littleEndian = true)
+  TCRC8T1Node(const uint8_t& crcpoly = 0x00, const uint8_t& crcinit = 0x00, EBytesOrder littleEndian = EBytesOrder::littleEndian)
       : TScalarNode<uint8_t>(littleEndian, 1), m_pBeginNode{nullptr}, m_pEndNode{nullptr}, m_distanceBytes{0}, m_crc{crcpoly, crcinit} {}
 
   virtual ~TCRC8T1Node() = default;

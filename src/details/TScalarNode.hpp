@@ -33,7 +33,7 @@ class TScalarNode : public TBaseNode {
 
  public:
   TScalarNode() = delete;
-  explicit TScalarNode(bool littleEndian = true, const size_t& arraySize = 1) : TBaseNode{littleEndian, arraySize, arraySize * sizeof(ScalarType)} {};
+  explicit TScalarNode(EBytesOrder littleEndian = EBytesOrder::littleEndian, const size_t& arraySize = 1) : TBaseNode{littleEndian, arraySize, arraySize * sizeof(ScalarType)} {};
 
   virtual ~TScalarNode() = default;
   TScalarNode(const TScalarNode& other) = default;

@@ -1,5 +1,5 @@
 # JUST DO IT (or not)
-* rules to generate node
+* class folder
 * default value
 * arrays
 * positions?
@@ -10,3 +10,5 @@
 * operators
 * dynamic arrays
 * typeinfo + universal read/write functions
+* gen tests
+* gen python 
