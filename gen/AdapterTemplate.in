@@ -1,0 +1,35 @@
+#ifndef $header_guard
+#define $header_guard
+
+#include <tsl/array_map.h>
+
+#include <$class_name/details/TBaseNode.hpp>
+$includes
+
+///////////////////////////////////////////////////////////
+/// @brief $class_name
+/// USE INIT FUNCTION TO INITIALIZE ADAPTER POINTERS
+/// ADAPTER DOESN'T CONTROL POINTER VALIDITY AND SIZE OF DATA TYPES
+
+class $class_name {
+ public:
+  $class_name() = default;
+  virtual ~$class_name() = default;
+  $class_name(const $class_name& other) = default;
+  $class_name($class_name&& other) = default;
+  $class_name& operator=(const $class_name& other) = default;
+  $class_name& operator=($class_name&& other) = default;
+
+  $nodes_definitions
+
+  void init(void* pInit) {
+    size_t pos = 0;
+    $nodes_init
+  }
+  
+   tsl::array_map<char, TBaseNode*> m_nodesHashTable {
+    $hash_table_items
+  };
+};
+
+#endif // $header_guard

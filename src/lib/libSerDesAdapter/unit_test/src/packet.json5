@@ -1,0 +1,38 @@
+[
+    {
+        "TProtoPacket": {
+            "KeyName1": {
+                "type": "double",
+                "size": 1,
+                "bytes_order": "little_endian",
+                "init_value": 3.14
+            },
+            "KeyName2": {
+                "type": "uint8",
+                "size": 16,
+                "bytes_order": "little_endian",
+                "init_value": [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF ]
+            },
+            "KeyName3": {
+                "type": "fstringUTF8",
+                "size": 16,
+                "bytes_order": "little_endian",
+                "init_value": "Test string"
+            },
+            "KeyName4": {
+                "type": "timeT1",
+                "size": 1,
+                "bytes_order": "little_endian",
+                "init_value": 0
+            },
+            "KeyName5": {
+                "type": "CRC8T1",
+                "size": 16,
+                "bytes_order": "little_endian",
+                "byte_start": 9,
+                "polyCRC": 0xFF,
+                "initCRC": 0xAB
+            }
+        }
+    }
+]
