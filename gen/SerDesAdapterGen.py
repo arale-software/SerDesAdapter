@@ -13,6 +13,8 @@ import string
 import random
 import os
 from string import Template
+from pathlib import Path
+import shutil 
 
 #IMPORT HERE YOUR CUSTOM NODE GENERATOR MODULE#
 from NodeGenerators import BaseNodeGen as BaseNodeGen
@@ -51,10 +53,24 @@ def TSerdesAdapterClassGenCPP(adapterName, adapterFields):
     'nodes_init': '\n\t\t'.join(adapterNodesInitialization),
     'hash_table_items': '\n\t\t'.join(adapterNodesHashTableItems),
     }            
-    with open(os.getcwd()+'/AdapterTemplates/AdapterTemplateCPP.in', 'r') as templateFile:
-        src = Template(templateFile.read())
-        result = src.substitute(templateVariables)
-        print(result) #TODO gen class
+    with open(os.getcwd()+'/AdapterTemplates/AdapterTemplateCPP.in', 'r') as AdapterTemplateCPP:
+        adapterSrc = Template(AdapterTemplateCPP.read())
+        adapterFileData = adapterSrc.substitute(templateVariables)
+        with open(os.getcwd()+'/AdapterTemplates/CMakeLists.in', 'r') as CMakeTemplateFile:
+            cmakeSrc = Template(CMakeTemplateFile.read())
+            cmakeFileData = cmakeSrc.substitute(templateVariables)
+
+            thirdPartyIncludes = os.getcwd()+'/SourceCPP/third_party'
+            detailsIncludes = os.getcwd()+'/SourceCPP/details'
+            adapterDirectory = os.getcwd()+'/' + adapterName + '/src'
+            adapterLibDirectory = adapterDirectory +'/lib/lib' + adapterName
+            shutil.copytree(thirdPartyIncludes, adapterDirectory + '/third_party') 
+            shutil.copytree(detailsIncludes, adapterLibDirectory + '/details') 
+            
+        with open(adapterLibDirectory + '/' + adapterName + '.hpp', 'a') as adapterFile:
+            print(adapterFileData, file=adapterFile) 
+        with open(os.getcwd()+'/' + adapterName+ '/CMakeLists.txt', 'a') as cmakeFile:
+            print(cmakeFileData, file=cmakeFile) 
 
 with open("packet.json5", "r+") as resultsFile: #TODO arg file
     jsonData = json5.load(resultsFile, allow_duplicate_keys=False)

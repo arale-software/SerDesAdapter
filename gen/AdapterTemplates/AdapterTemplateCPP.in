@@ -3,7 +3,7 @@
 
 #include <tsl/array_map.h>
 
-#include <$class_name/details/TBaseNode.hpp>
+#include <lib$class_name/details/TBaseNode.hpp>
 $includes
 
 ///////////////////////////////////////////////////////////

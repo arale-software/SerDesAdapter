@@ -1,5 +1,4 @@
 # JUST DO IT (or not)
-* class folder
 * default value
 * arrays
 * positions?

@@ -13,7 +13,7 @@ import NodeGenerators.BaseNodeGen as BaseNodeGen
 class TCRC8T1NodeGenCPP(BaseNodeGen.TBaseNodeGenCPP) :
     m_typename = 'TCRC8T1Node'
     m_typeid = {'CRC8T1' : 'uint8_t'}
-    m_includes = ['/details/CRC8T1Node.hpp']
+    m_includes = ['/details/TCRC8T1Node.hpp']
 
     def GenerateInclude(self, list, adapterName) :
         TCRC8T1NodeGenCPP.m_in_use = super().GenerateInclude(list, adapterName, TCRC8T1NodeGenCPP.m_in_use) #FIXME

@@ -14,7 +14,7 @@
 
 #include <boost/crc.hpp>
 
-#include <libSerDesAdapter/details/TScalarNode.hpp>
+#include "TScalarNode.hpp"
 
 ///////////////////////////////////////////////////////////
 /// @brief TCRC8T1Node

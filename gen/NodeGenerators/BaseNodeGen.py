@@ -17,7 +17,7 @@ class TBaseNodeGenCPP :
     def GenerateInclude(self, list, adapterName, needToGenerete) :
         if (needToGenerete == False) :
             for include in self.m_includes : 
-                list.append('#include <' + adapterName + include)
+                list.append('#include <lib' + adapterName + include + '>')
         needToGenerete = True
         return needToGenerete
     

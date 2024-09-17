@@ -11,7 +11,7 @@
 #ifndef __T_SCALAR_NODE_HPP_VVPF5CN38WNG__
 #define __T_SCALAR_NODE_HPP_VVPF5CN38WNG__
 
-#include <libSerDesAdapter/details/TBaseNode.hpp>
+#include "TBaseNode.hpp"
 
 ///////////////////////////////////////////////////////////
 /// @brief TScalarNode
