@@ -69,7 +69,23 @@ class TScalarNode : public TBaseNode {
   virtual void writeData(void* pSrc, size_t const countBytes, size_t const posArray = 0) override {}
   // TODO
   virtual operator float() const override { return *m_pData; }
-  virtual void fromString(const char* str) override {}
+
+  virtual void fromString(const char* str, int32_t base = 10) override {
+    char* end = nullptr;
+    if constexpr (std::is_integral_v<ScalarType> || std::is_enum_v<ScalarType>) {
+      if (std::is_signed_v<ScalarType>) {
+        *m_pData = static_cast<ScalarType>(strtol(str, &end, base));
+      } else {
+        *m_pData = static_cast<ScalarType>(strtoul(str, &end, base));
+      }
+    } else if constexpr (std::is_floating_point_v<ScalarType>) {
+      *m_pData = static_cast<ScalarType>(strtod(str, &end));
+    }
+    if (*end != '\0') {
+      throw std::invalid_argument("Invalid argument to convert");
+    }
+  }
+
   virtual void update() override {}
   virtual void* data() noexcept override { return m_pData; }
   virtual size_t init(void* pInit) noexcept override {

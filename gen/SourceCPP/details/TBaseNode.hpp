@@ -70,7 +70,7 @@ class TBaseNode {
   virtual void update() = 0;
   const size_t& sizeBytes() const noexcept { return m_countBytes; }
 
-  virtual void fromString(const char* str) = 0;
+  virtual void fromString(const char* str, int32_t base = 10) = 0;
   // TODO virtual std::string_view toString() = 0;
 
   virtual operator float() const = 0;

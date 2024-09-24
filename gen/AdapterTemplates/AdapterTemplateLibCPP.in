@@ -1,0 +1,9 @@
+#include <lib$class_name/$class_name.hpp>
+
+extern "C" TBaseSerDesAdapter* createBase() {
+  return new $class_name();
+}
+
+extern "C" $class_name* createDerived() {
+  return new $class_name();
+}

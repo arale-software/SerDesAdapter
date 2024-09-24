@@ -1,8 +1,7 @@
 #ifndef $header_guard
 #define $header_guard
 
-#include <tsl/array_map.h>
-
+#include <lib$class_name/details/TBaseSerDesAdapter.hpp>
 #include <lib$class_name/details/TBaseNode.hpp>
 $includes
 
@@ -11,7 +10,7 @@ $includes
 /// USE INIT FUNCTION TO INITIALIZE ADAPTER POINTERS
 /// ADAPTER DOESN'T CONTROL POINTER VALIDITY AND SIZE OF DATA TYPES
 
-class $class_name {
+class $class_name : public TBaseSerDesAdapter {
  public:
   $class_name() = default;
   virtual ~$class_name() = default;
@@ -22,14 +21,19 @@ class $class_name {
 
   $nodes_definitions
 
-  void init(void* pInit) {
+  virtual void init(void* pInit) override {
     size_t pos = 0;
     $nodes_init
   }
   
-   tsl::array_map<char, TBaseNode*> m_nodesHashTable {
+   TBaseNodePtrMap m_nodesHashTable {
     $hash_table_items
   };
+
+  virtual TBaseNodePtrMap& getNodeMap() override {
+    return m_nodesHashTable;
+  }
+
 };
 
 #endif // $header_guard
