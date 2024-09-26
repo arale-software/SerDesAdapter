@@ -23,12 +23,18 @@ class TScalarNode : public TBaseNode {
 
   template <typename T>
   void readScalar(T& value) {
-    value = *m_pData;
+    if constexpr (std::is_same_v<T, ScalarType>)
+      value = *m_pData;
+    else
+      value = static_cast<T>(*m_pData);
   }
 
   template <typename T>
   void writeScalar(const T& value) {
-    *m_pData = value;
+    if constexpr (std::is_same_v<T, ScalarType>)
+      *m_pData = value;
+    else
+      *m_pData = static_cast<ScalarType>(value);
   }
 
  public:

@@ -36,6 +36,7 @@ def TSerdesAdapterClassGenCPP(adapterName, adapterFields):
     adapterIncludes = []
     adapterNodesDefinitions = []
     adapterNodesInitialization = []
+    adapterNodesUpdate = []
     adapterNodesHashTableItems = []
     for fieldName, fieldInfo in adapterFields.items() :
         fieldType = fieldInfo.get('type')
@@ -44,6 +45,7 @@ def TSerdesAdapterClassGenCPP(adapterName, adapterFields):
         nodeGenerator.GenerateInclude(adapterIncludes, adapterName)
         nodeGenerator.GenerateDefinition(adapterNodesDefinitions, fieldName, fieldInfo)
         nodeGenerator.GenerateInitialization(adapterNodesInitialization, fieldName, fieldInfo)
+        nodeGenerator.GenerateUpdate(adapterNodesUpdate, fieldName, fieldInfo)
     adapterNodesHashTableItems[-1] = f"{adapterNodesHashTableItems[-1][0: -1]}"
     templateVariables = {
     'class_name': adapterName,
@@ -51,6 +53,7 @@ def TSerdesAdapterClassGenCPP(adapterName, adapterFields):
     'includes': '\n'.join(adapterIncludes),
     'nodes_definitions': '\n\t'.join(adapterNodesDefinitions),
     'nodes_init': '\n\t\t'.join(adapterNodesInitialization),
+    'nodes_update': '\n\t\t'.join(adapterNodesUpdate),
     'hash_table_items': '\n\t\t'.join(adapterNodesHashTableItems),
     }            
     with open(os.getcwd()+'/AdapterTemplates/AdapterTemplateCPP.in', 'r') as AdapterTemplateCPP,\

@@ -28,4 +28,7 @@ class TCRC8T1NodeGenCPP(BaseNodeGen.TBaseNodeGenCPP) :
         begin = str(fieldInfo.get('begin'))
         end = str(fieldInfo.get('end'))
         list.append('pos += m_' + str(fieldName) + '.init(reinterpret_cast<uint8_t*>(pInit) + pos, &m_' + begin + ', &m_' + end + ');')
+    
+    def GenerateUpdate(self, list, fieldName, fieldInfo):
+        list.append('m_' + str(fieldName) + '.update();')
         

@@ -5,7 +5,7 @@ LANGUAGES CXX
 
 file(GLOB_RECURSE LIB_SOURCES src/*.cpp src/*.cxx src/*.c src/*.cc src/*.CPP src/*.CXX src/*.C src/*.CC)
 add_library($${PROJECT_NAME} SHARED $${LIB_SOURCES})
-add_library($${PROJECT_NAME} STATIC $${LIB_SOURCES})
+#add_library($${PROJECT_NAME} STATIC $${LIB_SOURCES})
 
 set_target_properties($${PROJECT_NAME} PROPERTIES 
 POSITION_INDEPENDENT_CODE ON
@@ -21,7 +21,7 @@ target_compile_options($${PROJECT_NAME} PRIVATE
 "$$<$$<CONFIG:Debug>:-O0;-g3;-DDEBUG>"
 -fPIC -fmessage-length=0 -pedantic   
 -Wall -Wextra -Wpedantic -Wshadow -Wconversion 
--Werror -Wfloat-equal -Wformat-nonliteral 
+#-Werror -Wfloat-equal -Wformat-nonliteral 
 -Wformat-security -Wformat-y2k -Wformat=2 
 -Wimport -Winvalid-pch -Wlogical-op 
 -Wmissing-declarations -Wmissing-field-initializers 

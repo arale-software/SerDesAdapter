@@ -39,7 +39,6 @@ class TCRC8T1Node : public TScalarNode<uint8_t> {
 
   virtual void update() override {
     m_crc.process_bytes(m_pBeginNode->data(), m_distanceBytes);
-    uint8_t asd = m_crc.checksum();
     writeUnsignedInt8(m_crc.checksum());
   }
 

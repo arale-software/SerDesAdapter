@@ -25,15 +25,18 @@ class $class_name : public TBaseSerDesAdapter {
     size_t pos = 0;
     $nodes_init
   }
+
+  virtual void update() override {
+    $nodes_update
+  }
   
-   TBaseNodePtrMap m_nodesHashTable {
+  TBaseNodePtrMap m_nodesHashTable {
     $hash_table_items
   };
 
   virtual TBaseNodePtrMap& getNodeMap() override {
     return m_nodesHashTable;
   }
-
 };
 
 #endif // $header_guard

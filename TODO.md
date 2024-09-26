@@ -11,3 +11,4 @@
 * typeinfo + universal read/write functions
 * gen tests
 * gen python 
+* cmake -> makefile

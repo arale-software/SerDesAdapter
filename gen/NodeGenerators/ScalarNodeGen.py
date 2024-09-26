@@ -26,3 +26,6 @@ class TScalarNodeGenCPP(BaseNodeGen.TBaseNodeGenCPP) :
     def GenerateInitialization(self, list, fieldName, fieldInfo):
         list.append('pos += m_' + str(fieldName) + '.init(reinterpret_cast<uint8_t*>(pInit) + pos);')
         
+    def GenerateUpdate(self, list, fieldName, fieldInfo):
+        return
+        

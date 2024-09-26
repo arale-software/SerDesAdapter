@@ -27,3 +27,6 @@ class TBaseNodeGenCPP :
     def GenerateInitialization(self, list, fieldName, fieldInfo):
         list.append("[init] Wrong usage base node generator for " + str(fieldName))
         
+    def GenerateUpdate(self, list, fieldName, fieldInfo):
+        list.append("[update] Wrong usage base node generator for " + str(fieldName))
+        
