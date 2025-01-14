@@ -50,31 +50,52 @@ class TBaseNode {
   virtual void readUnsignedInt16(uint16_t& dst) = 0;
   virtual void readUnsignedInt32(uint32_t& dst) = 0;
   virtual void readUnsignedInt128(__uint128_t& dst) = 0;
-  virtual void readData(void* pDst, size_t const countBytes, size_t const posArray = 0) = 0;
+  virtual void readData(void* pDst, size_t countBytes, size_t posArray = 0) = 0;
 
-  virtual void writeFloat(const float& src) = 0;
-  virtual void writeDouble(const double& src) = 0;
-  virtual void writeInt8(const int8_t& src) = 0;
-  virtual void writeInt16(const int16_t& src) = 0;
-  virtual void writeInt32(const int32_t& src) = 0;
-  virtual void writeInt64(const int64_t& src) = 0;
-  virtual void writeInt128(const __int128_t& src) = 0;
-  virtual void writeUnsignedInt8(const uint8_t& src) = 0;
-  virtual void writeUnsignedInt16(const uint16_t& src) = 0;
-  virtual void writeUnsignedInt32(const uint32_t& src) = 0;
-  virtual void writeUnsignedInt128(const __uint128_t& src) = 0;
-  virtual void writeData(void* pSrc, size_t const countBytes, size_t const posArray = 0) = 0;
+  virtual void writeFloat(float src) = 0;
+  virtual void writeDouble(double src) = 0;
+  virtual void writeInt8(int8_t src) = 0;
+  virtual void writeInt16(int16_t src) = 0;
+  virtual void writeInt32(int32_t src) = 0;
+  virtual void writeInt64(int64_t src) = 0;
+  virtual void writeInt128(__int128_t src) = 0;
+  virtual void writeUnsignedInt8(uint8_t src) = 0;
+  virtual void writeUnsignedInt16(uint16_t src) = 0;
+  virtual void writeUnsignedInt32(uint32_t src) = 0;
+  virtual void writeUnsignedInt128(__uint128_t src) = 0;
+  virtual void writeData(const void* pSrc, size_t countBytes, size_t posArray = 0) = 0;
 
   virtual void* data() noexcept = 0;
   virtual size_t init(void* pInit) noexcept = 0;
   virtual void update() = 0;
-  const size_t& sizeBytes() const noexcept { return m_countBytes; }
+  size_t sizeBytes() const noexcept { return m_countBytes; }
 
   virtual void fromString(const char* str, int32_t base = 10) = 0;
-  // TODO virtual std::string_view toString() = 0;
+  virtual std::string toString() = 0;
 
-  virtual operator float() const = 0;
-  // TODO virtual TBaseNode& operator=(const float& rhs)
+  operator float() const = 0;
+  virtual operator double() const = 0;
+  virtual operator int8_t() const = 0;
+  virtual operator int16_t() const = 0;
+  virtual operator int32_t() const = 0;
+  virtual operator int64_t() const = 0;
+  virtual operator __int128_t() const = 0;
+  virtual operator uint8_t() const = 0;
+  virtual operator uint16_t () const = 0;
+  virtual operator uint32_t () const = 0;
+  virtual operator __uint128_t () const = 0;
+
+  virtual TBaseNode& operator=(float rhs) = 0;
+  virtual TBaseNode& operator=(double rhs) = 0;
+  virtual TBaseNode& operator=(int8_t rhs) = 0;
+  virtual TBaseNode& operator=(int16_t rhs) = 0;
+  virtual TBaseNode& operator=(int32_t rhs) = 0;
+  virtual TBaseNode& operator=(int64_t rhs) = 0;
+  virtual TBaseNode& operator=(__int128_t rhs) = 0;
+  virtual TBaseNode& operator=(uint8_t rhs) = 0;
+  virtual TBaseNode& operator=(uint16_t rhs) = 0;
+  virtual TBaseNode& operator=(uint32_t rhs) = 0;
+  virtual TBaseNode& operator=(__uint128_t rhs) = 0;
 };
 
 #endif  // __T_BASE_NODE_HPP_1UV98Z4DK9ZI__
