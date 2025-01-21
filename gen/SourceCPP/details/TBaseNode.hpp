@@ -15,6 +15,14 @@
 
 #include <stdint.h>
 
+#ifdef __SIZEOF_INT128__
+  using int128_t = __int128_t;
+  using uint128_t = __uint128_t;
+  #define INT128_CODE(...) __VA_ARGS__
+#else
+  #define INT128_CODE(...)
+#endif
+
 ///////////////////////////////////////////////////////////
 /// @brief TBaseNode
 /// abstract class
@@ -39,18 +47,18 @@ class TBaseNode {
   TBaseNode& operator=(const TBaseNode& other) = default;
   TBaseNode& operator=(TBaseNode&& other) = default;
 
-  virtual void readFloat(float& dst) = 0;
-  virtual void readDouble(double& dst) = 0;
-  virtual void readInt8(int8_t& dst) = 0;
-  virtual void readInt16(int16_t& dst) = 0;
-  virtual void readInt32(int32_t& dst) = 0;
-  virtual void readInt64(int64_t& dst) = 0;
-  virtual void readInt128(__int128_t& dst) = 0;
-  virtual void readUnsignedInt8(uint8_t& dst) = 0;
-  virtual void readUnsignedInt16(uint16_t& dst) = 0;
-  virtual void readUnsignedInt32(uint32_t& dst) = 0;
-  virtual void readUnsignedInt128(__uint128_t& dst) = 0;
-  virtual void readData(void* pDst, size_t countBytes, size_t posArray = 0) = 0;
+  virtual void readFloat(float& dst) const = 0;
+  virtual void readDouble(double& dst) const = 0;
+  virtual void readInt8(int8_t& dst) const = 0;
+  virtual void readInt16(int16_t& dst) const = 0;
+  virtual void readInt32(int32_t& dst) const = 0;
+  virtual void readInt64(int64_t& dst) const = 0;
+  INT128_CODE(virtual void readInt128(int128_t& dst) const = 0;)
+  virtual void readUnsignedInt8(uint8_t& dst) const = 0;
+  virtual void readUnsignedInt16(uint16_t& dst) const = 0;
+  virtual void readUnsignedInt32(uint32_t& dst) const = 0;
+  INT128_CODE(virtual void readUnsignedInt128(uint128_t& dst) const = 0;)
+  virtual void readData(void* pDst, size_t countBytes, size_t posArray = 0) const = 0;
 
   virtual void writeFloat(float src) = 0;
   virtual void writeDouble(double src) = 0;
@@ -58,11 +66,11 @@ class TBaseNode {
   virtual void writeInt16(int16_t src) = 0;
   virtual void writeInt32(int32_t src) = 0;
   virtual void writeInt64(int64_t src) = 0;
-  virtual void writeInt128(__int128_t src) = 0;
+  INT128_CODE(virtual void writeInt128(int128_t src) = 0;)
   virtual void writeUnsignedInt8(uint8_t src) = 0;
   virtual void writeUnsignedInt16(uint16_t src) = 0;
   virtual void writeUnsignedInt32(uint32_t src) = 0;
-  virtual void writeUnsignedInt128(__uint128_t src) = 0;
+  INT128_CODE(virtual void writeUnsignedInt128(uint128_t src) = 0;)
   virtual void writeData(const void* pSrc, size_t countBytes, size_t posArray = 0) = 0;
 
   virtual void* data() noexcept = 0;
@@ -79,23 +87,11 @@ class TBaseNode {
   virtual operator int16_t() const = 0;
   virtual operator int32_t() const = 0;
   virtual operator int64_t() const = 0;
-  virtual operator __int128_t() const = 0;
+  INT128_CODE(virtual operator int128_t() const = 0;)
   virtual operator uint8_t() const = 0;
   virtual operator uint16_t () const = 0;
   virtual operator uint32_t () const = 0;
-  virtual operator __uint128_t () const = 0;
-
-  /*virtual TBaseNode& operator=(float rhs) = 0;
-  virtual TBaseNode& operator=(double rhs) = 0;
-  virtual TBaseNode& operator=(int8_t rhs) = 0;
-  virtual TBaseNode& operator=(int16_t rhs) = 0;
-  virtual TBaseNode& operator=(int32_t rhs) = 0;
-  virtual TBaseNode& operator=(int64_t rhs) = 0;
-  virtual TBaseNode& operator=(__int128_t rhs) = 0;
-  virtual TBaseNode& operator=(uint8_t rhs) = 0;
-  virtual TBaseNode& operator=(uint16_t rhs) = 0;
-  virtual TBaseNode& operator=(uint32_t rhs) = 0;
-  virtual TBaseNode& operator=(__uint128_t rhs) = 0;*/
+  INT128_CODE(virtual operator uint128_t () const = 0;)
 };
 
 #endif  // __T_BASE_NODE_HPP_1UV98Z4DK9ZI__

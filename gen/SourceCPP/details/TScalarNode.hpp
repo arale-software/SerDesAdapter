@@ -50,18 +50,18 @@ class TScalarNode : public TBaseNode {
   TScalarNode& operator=(TScalarNode&& other) = default;
 
  public:
-  virtual void readFloat(float& dst) override { dst = static_cast<float>(readScalar()); }
-  virtual void readDouble(double& dst) override { dst = static_cast<double>(readScalar()); }
-  virtual void readInt8(int8_t& dst) override { dst = static_cast<int8_t>(readScalar()); }
-  virtual void readInt16(int16_t& dst) override { dst = static_cast<int16_t>(readScalar()); }
-  virtual void readInt32(int32_t& dst) override { dst = static_cast<int32_t>(readScalar()); }
-  virtual void readInt64(int64_t& dst) override { dst = static_cast<int64_t>(readScalar()); }
-  virtual void readInt128(__int128_t& dst) override { dst = static_cast<__int128_t>(readScalar()); }
-  virtual void readUnsignedInt8(uint8_t& dst) override { dst = static_cast<uint8_t>(readScalar()); }
-  virtual void readUnsignedInt16(uint16_t& dst) override { dst = static_cast<uint16_t>(readScalar()); }
-  virtual void readUnsignedInt32(uint32_t& dst) override { dst = static_cast<uint32_t>(readScalar()); }
-  virtual void readUnsignedInt128(__uint128_t& dst) override { dst = static_cast<__uint128_t>(readScalar()); }
-  virtual void readData(void* pDst, size_t countBytes, size_t posArray = 0) override {
+  virtual void readFloat(float& dst) const override { dst = static_cast<float>(readScalar()); }
+  virtual void readDouble(double& dst) const override { dst = static_cast<double>(readScalar()); }
+  virtual void readInt8(int8_t& dst) const override { dst = static_cast<int8_t>(readScalar()); }
+  virtual void readInt16(int16_t& dst) const override { dst = static_cast<int16_t>(readScalar()); }
+  virtual void readInt32(int32_t& dst) const override { dst = static_cast<int32_t>(readScalar()); }
+  virtual void readInt64(int64_t& dst) const override { dst = static_cast<int64_t>(readScalar()); }
+  INT128_CODE(virtual void readInt128(int128_t& dst) const override { dst = static_cast<int128_t>(readScalar()); })
+  virtual void readUnsignedInt8(uint8_t& dst) const override { dst = static_cast<uint8_t>(readScalar()); }
+  virtual void readUnsignedInt16(uint16_t& dst) const override { dst = static_cast<uint16_t>(readScalar()); }
+  virtual void readUnsignedInt32(uint32_t& dst) const override { dst = static_cast<uint32_t>(readScalar()); }
+  INT128_CODE(virtual void readUnsignedInt128(uint128_t& dst) const override { dst = static_cast<uint128_t>(readScalar()); })
+  virtual void readData(void* pDst, size_t countBytes, size_t posArray = 0) const override {
     auto data = reinterpret_cast<char*>(m_pData);
     auto dst = static_cast<char*>(pDst);
     for (size_t i = posArray; i < countBytes && i < m_countBytes; ++i) {
@@ -75,11 +75,11 @@ class TScalarNode : public TBaseNode {
   virtual void writeInt16(int16_t src) override { writeScalar(src); }
   virtual void writeInt32(int32_t src) override { writeScalar(src); }
   virtual void writeInt64(int64_t src) override { writeScalar(src); }
-  virtual void writeInt128(__int128_t src) override { writeScalar(src); }
+  INT128_CODE(virtual void writeInt128(int128_t src) override { writeScalar(src); })
   virtual void writeUnsignedInt8(uint8_t src) override { writeScalar(src); }
   virtual void writeUnsignedInt16(uint16_t src) override { writeScalar(src); }
   virtual void writeUnsignedInt32(uint32_t src) override { writeScalar(src); }
-  virtual void writeUnsignedInt128(__uint128_t src) override { writeScalar(src); }
+  INT128_CODE(virtual void writeUnsignedInt128(uint128_t src) override { writeScalar(src); })
   virtual void writeData(const void* pSrc, size_t countBytes, size_t posArray = 0) override {
     auto data = reinterpret_cast<char*>(m_pData);
     auto src = static_cast<const char*>(pSrc);
@@ -94,23 +94,11 @@ class TScalarNode : public TBaseNode {
   virtual operator int16_t() const override  { return static_cast<int16_t>(readScalar()); }
   virtual operator int32_t() const override  { return static_cast<int32_t>(readScalar()); }
   virtual operator int64_t() const override  { return static_cast<int64_t>(readScalar()); }
-  virtual operator __int128_t() const override  { return static_cast<__int128_t>(readScalar()); }
+  INT128_CODE(virtual operator int128_t() const override  { return static_cast<int128_t>(readScalar()); })
   virtual operator uint8_t() const override  { return static_cast<uint8_t>(readScalar()); }
   virtual operator uint16_t () const override  { return static_cast<uint16_t>(readScalar()); }
   virtual operator uint32_t () const override  { return static_cast<uint32_t>(readScalar()); }
-  virtual operator __uint128_t () const override  { return static_cast<__uint128_t>(readScalar()); }
-
-  /*virtual TBaseNode& operator=(float rhs) { writeScalar(rhs); return *this; }
-  virtual TBaseNode& operator=(double rhs) { writeScalar(rhs); return *this; }
-  virtual TBaseNode& operator=(int8_t rhs) { writeScalar(rhs); return *this; }
-  virtual TBaseNode& operator=(int16_t rhs) { writeScalar(rhs); return *this; }
-  virtual TBaseNode& operator=(int32_t rhs) { writeScalar(rhs); return *this; }
-  virtual TBaseNode& operator=(int64_t rhs) { writeScalar(rhs); return *this; }
-  virtual TBaseNode& operator=(__int128_t rhs) { writeScalar(rhs); return *this; }
-  virtual TBaseNode& operator=(uint8_t rhs) { writeScalar(rhs); return *this; }
-  virtual TBaseNode& operator=(uint16_t rhs) { writeScalar(rhs); return *this; }
-  virtual TBaseNode& operator=(uint32_t rhs) { writeScalar(rhs); return *this; }
-  virtual TBaseNode& operator=(__uint128_t rhs) { writeScalar(rhs); return *this; }*/
+  INT128_CODE(virtual operator uint128_t () const override  { return static_cast<uint128_t>(readScalar()); })
 
   virtual void fromString(const char* str, int32_t base = 10) override {
     char* end = nullptr;
@@ -129,8 +117,8 @@ class TScalarNode : public TBaseNode {
   }
 
   virtual std::string toString() override {
-    if constexpr (std::is_same_v<ScalarType, __uint128_t>
-     || std::is_same_v<ScalarType, __int128_t>) {
+    INT128_CODE(if constexpr (std::is_same_v<ScalarType, uint128_t> ||
+     std::is_same_v<ScalarType, int128_t>) {
       if (*m_pData == 0) {
         return "0";
       }
@@ -146,7 +134,7 @@ class TScalarNode : public TBaseNode {
           num = num / 10;
       } while (num != 0);
       return result;
-    }
+    })
     return std::to_string(*m_pData);
   }
 
@@ -181,16 +169,17 @@ class TScalarNode : public TBaseNode {
       return __bswap_32(original);
     } else if constexpr (sizeof(ScalarType) == 8) {
       return __bswap_64(original);
-    } else if constexpr (sizeof(ScalarType) == 16) {
+    }
+    INT128_CODE( else if constexpr (sizeof(ScalarType) == 16) {
       union {
-        __uint128_t v;
+        uint128_t v;
         uint64_t q[2];
       } u1, u2;
       u1.v = original;
       u2.q[1] = __bswap_64(u1.q[0]);
       u2.q[0] = __bswap_64(u1.q[1]);
       return u2.v;
-    }
+    })
     return original;
   }
 };
