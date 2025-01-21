@@ -25,13 +25,13 @@ class TBaseNode {
   enum class EBytesOrder : bool { bigEndian = 0, littleEndian = 1 };
 
  protected:
-  EBytesOrder m_littleEndian{EBytesOrder::littleEndian};
+  EBytesOrder m_endianess{EBytesOrder::littleEndian};
   size_t m_arraySize{1};
   size_t m_countBytes{1};
 
  public:
   TBaseNode() = delete;
-  TBaseNode(EBytesOrder littleEndian, const size_t& arraySize, const size_t& countBytes) : m_littleEndian{littleEndian}, m_arraySize{arraySize}, m_countBytes{countBytes} {};
+  TBaseNode(EBytesOrder littleEndian, const size_t& arraySize, const size_t& countBytes) : m_endianess{littleEndian}, m_arraySize{arraySize}, m_countBytes{countBytes} {};
 
   virtual ~TBaseNode() = default;
   TBaseNode(const TBaseNode& other) = default;
@@ -73,7 +73,7 @@ class TBaseNode {
   virtual void fromString(const char* str, int32_t base = 10) = 0;
   virtual std::string toString() = 0;
 
-  operator float() const = 0;
+  virtual operator float() const = 0;
   virtual operator double() const = 0;
   virtual operator int8_t() const = 0;
   virtual operator int16_t() const = 0;
@@ -85,7 +85,7 @@ class TBaseNode {
   virtual operator uint32_t () const = 0;
   virtual operator __uint128_t () const = 0;
 
-  virtual TBaseNode& operator=(float rhs) = 0;
+  /*virtual TBaseNode& operator=(float rhs) = 0;
   virtual TBaseNode& operator=(double rhs) = 0;
   virtual TBaseNode& operator=(int8_t rhs) = 0;
   virtual TBaseNode& operator=(int16_t rhs) = 0;
@@ -95,7 +95,7 @@ class TBaseNode {
   virtual TBaseNode& operator=(uint8_t rhs) = 0;
   virtual TBaseNode& operator=(uint16_t rhs) = 0;
   virtual TBaseNode& operator=(uint32_t rhs) = 0;
-  virtual TBaseNode& operator=(__uint128_t rhs) = 0;
+  virtual TBaseNode& operator=(__uint128_t rhs) = 0;*/
 };
 
 #endif  // __T_BASE_NODE_HPP_1UV98Z4DK9ZI__

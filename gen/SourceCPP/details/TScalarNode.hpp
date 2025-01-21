@@ -21,18 +21,17 @@ class TScalarNode : public TBaseNode {
  protected:
   ScalarType* m_pData{nullptr};
 
-  template <typename T>
-  void readScalar(T& value) {
-    if (m_littleEndian == EBytesOrder::littleEndian) {
-      value = static_cast<T>(*m_pData);
+  ScalarType readScalar() const {
+    if (m_endianess == EBytesOrder::littleEndian) {
+      return *m_pData;
     } else {
-      value = swapBytes(static_cast<T>(*m_pData));
+      return swapBytes(*m_pData);
     }
   }
 
   template <typename T>
   void writeScalar(const T& value) {
-    if (m_littleEndian == EBytesOrder::littleEndian) {
+    if (m_endianess == EBytesOrder::littleEndian) {
       *m_pData = static_cast<ScalarType>(value);
     } else {
       *m_pData = swapBytes(static_cast<ScalarType>(value));
@@ -51,21 +50,21 @@ class TScalarNode : public TBaseNode {
   TScalarNode& operator=(TScalarNode&& other) = default;
 
  public:
-  virtual void readFloat(float& dst) override { readScalar(dst); }
-  virtual void readDouble(double& dst) override { readScalar(dst); }
-  virtual void readInt8(int8_t& dst) override { readScalar(dst); }
-  virtual void readInt16(int16_t& dst) override { readScalar(dst); }
-  virtual void readInt32(int32_t& dst) override { readScalar(dst); }
-  virtual void readInt64(int64_t& dst) override { readScalar(dst); }
-  virtual void readInt128(__int128_t& dst) override { readScalar(dst); }
-  virtual void readUnsignedInt8(uint8_t& dst) override { readScalar(dst); }
-  virtual void readUnsignedInt16(uint16_t& dst) override { readScalar(dst); }
-  virtual void readUnsignedInt32(uint32_t& dst) override { readScalar(dst); }
-  virtual void readUnsignedInt128(__uint128_t& dst) override { readScalar(dst); }
+  virtual void readFloat(float& dst) override { dst = static_cast<float>(readScalar()); }
+  virtual void readDouble(double& dst) override { dst = static_cast<double>(readScalar()); }
+  virtual void readInt8(int8_t& dst) override { dst = static_cast<int8_t>(readScalar()); }
+  virtual void readInt16(int16_t& dst) override { dst = static_cast<int16_t>(readScalar()); }
+  virtual void readInt32(int32_t& dst) override { dst = static_cast<int32_t>(readScalar()); }
+  virtual void readInt64(int64_t& dst) override { dst = static_cast<int64_t>(readScalar()); }
+  virtual void readInt128(__int128_t& dst) override { dst = static_cast<__int128_t>(readScalar()); }
+  virtual void readUnsignedInt8(uint8_t& dst) override { dst = static_cast<uint8_t>(readScalar()); }
+  virtual void readUnsignedInt16(uint16_t& dst) override { dst = static_cast<uint16_t>(readScalar()); }
+  virtual void readUnsignedInt32(uint32_t& dst) override { dst = static_cast<uint32_t>(readScalar()); }
+  virtual void readUnsignedInt128(__uint128_t& dst) override { dst = static_cast<__uint128_t>(readScalar()); }
   virtual void readData(void* pDst, size_t countBytes, size_t posArray = 0) override {
-    char* data = static_cast<char*>(m_pData);
-    char* dst = static_cast<char*>(pDst);
-    for (int i = posArray; i < countBytes && i < m_countBytes; ++i) {
+    auto data = reinterpret_cast<char*>(m_pData);
+    auto dst = static_cast<char*>(pDst);
+    for (size_t i = posArray; i < countBytes && i < m_countBytes; ++i) {
       dst[i] = data[i];
     }
   }
@@ -81,27 +80,27 @@ class TScalarNode : public TBaseNode {
   virtual void writeUnsignedInt16(uint16_t src) override { writeScalar(src); }
   virtual void writeUnsignedInt32(uint32_t src) override { writeScalar(src); }
   virtual void writeUnsignedInt128(__uint128_t src) override { writeScalar(src); }
-  virtual void writeData(void* pSrc, size_t countBytes, size_t posArray = 0) override {
-    char* data = static_cast<char*>(m_pData);
-    char* src = static_cast<char*>(pSrc);
-    for (int i = posArray; i < countBytes && i < m_countBytes; ++i) {
+  virtual void writeData(const void* pSrc, size_t countBytes, size_t posArray = 0) override {
+    auto data = reinterpret_cast<char*>(m_pData);
+    auto src = static_cast<const char*>(pSrc);
+    for (size_t i = posArray; i < countBytes && i < m_countBytes; ++i) {
       data[i] = src[i];
     }
   }
 
-  virtual operator float() const override { float res; readScalar(res); return res; }
-  virtual operator double() const override { double res; readScalar(res); return res; }
-  virtual operator int8_t() const override  { int8_t res; readScalar(res); return res; }
-  virtual operator int16_t() const override  { int16_t res; readScalar(res); return res; }
-  virtual operator int32_t() const override  { int32_t res; readScalar(res); return res; }
-  virtual operator int64_t() const override  { int64_t res; readScalar(res); return res; }
-  virtual operator __int128_t() const override  { __int128_t res; readScalar(res); return res; }
-  virtual operator uint8_t() const override  { uint8_t res; readScalar(res); return res; }
-  virtual operator uint16_t () const override  { uint16_t res; readScalar(res); return res; }
-  virtual operator uint32_t () const override  { uint32_t res; readScalar(res); return res; }
-  virtual operator __uint128_t () const override  { __uint128_t res; readScalar(res); return res; }
+  virtual operator float() const override { return static_cast<float>(readScalar()); }
+  virtual operator double() const override { return static_cast<double>(readScalar()); }
+  virtual operator int8_t() const override  { return static_cast<int8_t>(readScalar()); }
+  virtual operator int16_t() const override  { return static_cast<int16_t>(readScalar()); }
+  virtual operator int32_t() const override  { return static_cast<int32_t>(readScalar()); }
+  virtual operator int64_t() const override  { return static_cast<int64_t>(readScalar()); }
+  virtual operator __int128_t() const override  { return static_cast<__int128_t>(readScalar()); }
+  virtual operator uint8_t() const override  { return static_cast<uint8_t>(readScalar()); }
+  virtual operator uint16_t () const override  { return static_cast<uint16_t>(readScalar()); }
+  virtual operator uint32_t () const override  { return static_cast<uint32_t>(readScalar()); }
+  virtual operator __uint128_t () const override  { return static_cast<__uint128_t>(readScalar()); }
 
-  virtual TBaseNode& operator=(float rhs) { writeScalar(rhs); return *this; }
+  /*virtual TBaseNode& operator=(float rhs) { writeScalar(rhs); return *this; }
   virtual TBaseNode& operator=(double rhs) { writeScalar(rhs); return *this; }
   virtual TBaseNode& operator=(int8_t rhs) { writeScalar(rhs); return *this; }
   virtual TBaseNode& operator=(int16_t rhs) { writeScalar(rhs); return *this; }
@@ -111,7 +110,7 @@ class TScalarNode : public TBaseNode {
   virtual TBaseNode& operator=(uint8_t rhs) { writeScalar(rhs); return *this; }
   virtual TBaseNode& operator=(uint16_t rhs) { writeScalar(rhs); return *this; }
   virtual TBaseNode& operator=(uint32_t rhs) { writeScalar(rhs); return *this; }
-  virtual TBaseNode& operator=(__uint128_t rhs) { writeScalar(rhs); return *this; }
+  virtual TBaseNode& operator=(__uint128_t rhs) { writeScalar(rhs); return *this; }*/
 
   virtual void fromString(const char* str, int32_t base = 10) override {
     char* end = nullptr;
@@ -136,8 +135,7 @@ class TScalarNode : public TBaseNode {
         return "0";
       }
       std::string result;
-      ScalarType num;
-      readScalar(num);
+      ScalarType num = readScalar();
       if (num < 0) {
           num = -num;
           result += '-';
@@ -160,7 +158,7 @@ class TScalarNode : public TBaseNode {
     return m_countBytes;
   }
 
-  ScalarType swapBytes(ScalarType original) {
+  static ScalarType swapBytes(ScalarType original) {
     if constexpr (std::is_same_v<float, ScalarType>) {
       union {
           float f;
@@ -169,8 +167,7 @@ class TScalarNode : public TBaseNode {
       converter.f = original;
       converter.i = __bswap_32(converter.i);
       return converter.f;
-    }
-    if constexpr (std::is_same_v<double, ScalarType>) {
+    } else if constexpr (std::is_same_v<double, ScalarType>) {
       union {
           double d;
           uint64_t i;
@@ -178,20 +175,16 @@ class TScalarNode : public TBaseNode {
       converter.d = original;
       converter.i = __bswap_64(converter.i);
       return converter.d;
-    }
-    if constexpr (sizeof(ScalarType == 2)) {
+    } else if constexpr (sizeof(ScalarType) == 2) {
       return __bswap_16(original);
-    }
-    if constexpr (sizeof(ScalarType == 4)) {
+    } else if constexpr (sizeof(ScalarType) == 4) {
       return __bswap_32(original);
-    }
-    if constexpr (sizeof(ScalarType == 8)) {
+    } else if constexpr (sizeof(ScalarType) == 8) {
       return __bswap_64(original);
-    }
-    if constexpr (sizeof(ScalarType == 16)) {
+    } else if constexpr (sizeof(ScalarType) == 16) {
       union {
-        unsigned __uint128_t v;
-        unsigned uint64_t q[2];
+        __uint128_t v;
+        uint64_t q[2];
       } u1, u2;
       u1.v = original;
       u2.q[1] = __bswap_64(u1.q[0]);
