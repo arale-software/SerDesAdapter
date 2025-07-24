@@ -1,0 +1,3 @@
+/gen/TProtoPacket/*
+/gen/NodeGenerators/__pycache__/*
+/gen/packet.json5
