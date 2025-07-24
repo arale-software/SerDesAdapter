@@ -1,3 +1,4 @@
 /gen/TProtoPacket/*
 /gen/NodeGenerators/__pycache__/*
 /gen/packet.json5
+/test/CPP/build/*
