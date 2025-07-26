@@ -15,24 +15,44 @@ import os
 from string import Template
 from pathlib import Path
 import shutil 
+import importlib
+import inspect
 
-#IMPORT HERE YOUR CUSTOM NODE GENERATOR MODULE#
-from NodeGenerators import BaseNodeGen as BaseNodeGen
-from NodeGenerators import ScalarNodeGen as ScalarNodeGen
-from NodeGenerators import CRC8T1NodeGen as CRC8T1NodeGen
-#^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^#
+def loadNodeGenerators():
+    """
+    Автоматически загружает и создает экземпляры всех генераторов узлов
+    из директории NodeGenerators
+    """
+    files = os.listdir('NodeGenerators')
+    moduleNames = [f[:-3] for f in files if f.endswith('.py') and not f.startswith('_')]
+    importedModules = {}
+    for moduleName in moduleNames:
+        try:
+            module = importlib.import_module(f'NodeGenerators.{moduleName}')
+            importedModules[moduleName] = module
+        except Exception as e:
+            print(f"Ошибка при импорте модуля {moduleName}: {e}")
+    def findCppClass(module):
+        for name, obj in inspect.getmembers(module):
+            if inspect.isclass(obj) and name.endswith('NodeGenCPP'):
+                return obj
+        return None
+    nodeGenerators = []
+    for moduleName, module in importedModules.items():
+        cppClass = findCppClass(module)
+        if cppClass:
+            try:
+                instance = cppClass()
+                nodeGenerators.append(instance)
+            except Exception as e:
+                print(f"Ошибка при создании экземпляра класса {cppClass.__name__}: {e}")
+    return nodeGenerators
 
 def generatorID(size=6, chars=string.ascii_uppercase + string.digits):
     return ''.join(random.choice(chars) for _ in range(size))
     
 def TSerdesAdapterClassGenCPP(adapterName, adapterFields):
-#DEFINE HERE YOUR CUSTOM NODE GENERATOR CLASS#
-    nodeGenerators = [
-        BaseNodeGen.TBaseNodeGenCPP(), 
-        ScalarNodeGen.TScalarNodeGenCPP(),
-        CRC8T1NodeGen.TCRC8T1NodeGenCPP()
-        ]    
-#^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^#
+    nodeGenerators = loadNodeGenerators()
     adapterIncludes = []
     adapterNodesDefinitions = []
     adapterNodesInitialization = []
@@ -85,3 +105,7 @@ with open("packet.json5", "r+") as resultsFile: #TODO arg file
     adapterName = adapterInfo.get('Name')
     adapterFields = adapterInfo.get('Fields')
     TSerdesAdapterClassGenCPP(adapterName, adapterFields)
+    
+    #TODO 
+    # 1. args
+    # 2. csv
