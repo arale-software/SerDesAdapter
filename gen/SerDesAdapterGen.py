@@ -8,7 +8,12 @@
 #* @copyright Copyright (c) 2024
 #*
 
+# pip install pandas openpyxl xlrd
+
+import csv
 import json5
+import pandas as pd
+import ast
 import argparse
 import string
 import random
@@ -100,25 +105,66 @@ def TSerdesAdapterClassGenCPP(adapterName, adapterFields):
             print(adapterLibFileData, file=adapterLibFile) 
             print(cmakeFileData, file=cmakeFile) 
 
-def main():
-    parser = argparse.ArgumentParser(description='SerDesAdapter')
-    parser.add_argument('filename', type=str, help='Имя файла для сериализации')
-    args = parser.parse_args()
+
+
+def parseJson5(filePath):
+    with open(filePath, 'r', encoding='utf-8') as file:
+        data = json5.load(file, allow_duplicate_keys=False)
+        return data
+
+def parseCsv(filePath):
+    fields = {}
+    with open(filePath, 'r', encoding='utf-8') as file:
+        reader = csv.DictReader(file)
+        columns = [col for col in reader.fieldnames if col != 'Fields']
+        
+        for row in reader:
+            fieldName = row['Fields']
+            fields[fieldName] = {}
+            
+            for col in columns:
+                try:
+                    value = ast.literal_eval(row[col])
+                except (ValueError, SyntaxError):
+                    value = row[col]
+                fields[fieldName][col] = value
+    return fields
+
+def parseXls(filePath):
     try:
-        with open(args.filename, 'r+', encoding='utf-8') as resultsFile:
-            jsonData = json5.load(resultsFile, allow_duplicate_keys=False)
-            adapterInfo = jsonData.get('SerDesAdapter')
-            adapterName = adapterInfo.get('Name')
-            adapterFields = adapterInfo.get('Fields')
-            TSerdesAdapterClassGenCPP(adapterName, adapterFields)
-    except FileNotFoundError:
-        print(f"Ошибка: файл {args.filename} не найден")
+        df = pd.read_excel(filePath, sheet_name=0)
+        fields = {}
+        for _, row in df.iterrows():
+            fieldName = row['Fields']
+            fields[fieldName] = row.drop('Fields').to_dict()
+        return fields
     except Exception as e:
-        print(f"Произошла ошибка: {str(e)}")
+        raise ValueError(f"Ошибка чтения Excel файла: {str(e)}")
+
+def main():
+    parser = argparse.ArgumentParser(description='SerDesAdapter 1.0 alpha')
+    parser.add_argument('--filename', type=str, help='File for serialization')
+    parser.add_argument('--classname', type=str, help='Adapter class name (optional)') #or filename
+    args = parser.parse_args()
+    filePath = Path(args.filename)
+    try:
+        if filePath.suffix.lower() == '.json5':
+            parsedData = parseJson5(filePath)
+        elif filePath.suffix.lower() == '.csv':
+            parsedData = parseCsv(filePath)
+        elif filePath.suffix.lower() in ('.xls', '.xlsx'):
+            parsedData = parseXls(filePath)
+        else:
+            raise ValueError("Wrong file format (wanted .json5, .csv, .xls, .xlsx)")
+        if args.name:
+            adapterName = args.classname
+        else:
+            adapterName = filePath.stem           
+        TSerdesAdapterClassGenCPP(adapterName, parsedData)    
+    except FileNotFoundError:
+        print(f"Error: file {filePath} not found")
+    except Exception as e:
+        print(f"Error: {str(e)}")
 
 if __name__ == '__main__':
     main()
-    
-    #TODO 
-    # 1. packName
-    # 2. csv
