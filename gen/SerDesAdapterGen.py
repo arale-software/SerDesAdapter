@@ -9,6 +9,7 @@
 #*
 
 import json5
+import argparse
 import string
 import random
 import os
@@ -99,13 +100,25 @@ def TSerdesAdapterClassGenCPP(adapterName, adapterFields):
             print(adapterLibFileData, file=adapterLibFile) 
             print(cmakeFileData, file=cmakeFile) 
 
-with open("packet.json5", "r+") as resultsFile: #TODO arg file
-    jsonData = json5.load(resultsFile, allow_duplicate_keys=False)
-    adapterInfo = jsonData.get('SerDesAdapter')
-    adapterName = adapterInfo.get('Name')
-    adapterFields = adapterInfo.get('Fields')
-    TSerdesAdapterClassGenCPP(adapterName, adapterFields)
+def main():
+    parser = argparse.ArgumentParser(description='SerDesAdapter')
+    parser.add_argument('filename', type=str, help='Имя файла для сериализации')
+    args = parser.parse_args()
+    try:
+        with open(args.filename, 'r+', encoding='utf-8') as resultsFile:
+            jsonData = json5.load(resultsFile, allow_duplicate_keys=False)
+            adapterInfo = jsonData.get('SerDesAdapter')
+            adapterName = adapterInfo.get('Name')
+            adapterFields = adapterInfo.get('Fields')
+            TSerdesAdapterClassGenCPP(adapterName, adapterFields)
+    except FileNotFoundError:
+        print(f"Ошибка: файл {args.filename} не найден")
+    except Exception as e:
+        print(f"Произошла ошибка: {str(e)}")
+
+if __name__ == '__main__':
+    main()
     
     #TODO 
-    # 1. args
+    # 1. packName
     # 2. csv
