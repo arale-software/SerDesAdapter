@@ -1,0 +1,5 @@
+Fields,type,size,bytes_order,init_value,begin,end,polyCRC,initCRC
+KeyName1,uint8_t,1,littleEndian,11,,,,
+KeyName11,uint8_t,1,littleEndian,11,,,,
+KeyName2,float,16,littleEndian,33.33,,,,
+KeyName3,CRC8T1,1,littleEndian,0,KeyName1,KeyName2,0xFF,0xAB

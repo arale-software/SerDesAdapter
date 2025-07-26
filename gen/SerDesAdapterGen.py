@@ -133,13 +133,28 @@ def parseCsv(filePath):
 def parseXls(filePath):
     try:
         df = pd.read_excel(filePath, sheet_name=0)
-        fields = {}
+        fields = {}  
         for _, row in df.iterrows():
-            fieldName = row['Fields']
-            fields[fieldName] = row.drop('Fields').to_dict()
+            fieldName = row['Fields']        
+            fieldData = {}
+            for col in df.columns:
+                if col != 'Fields':
+                    try:
+                        value = pd.to_numeric(row[col])
+                    except ValueError:
+                        value = row[col]
+                    if isinstance(value, str):
+                        try:
+                            value = ast.literal_eval(value)
+                        except (ValueError, SyntaxError):
+                            pass
+                    
+                    fieldData[col] = value
+            
+            fields[fieldName] = fieldData
         return fields
     except Exception as e:
-        raise ValueError(f"Ошибка чтения Excel файла: {str(e)}")
+        raise ValueError(f"Can't read Excel file: {str(e)}")
 
 def main():
     parser = argparse.ArgumentParser(description='SerDesAdapter 1.0 alpha')
@@ -156,7 +171,7 @@ def main():
             parsedData = parseXls(filePath)
         else:
             raise ValueError("Wrong file format (wanted .json5, .csv, .xls, .xlsx)")
-        if args.name:
+        if args.classname:
             adapterName = args.classname
         else:
             adapterName = filePath.stem           
