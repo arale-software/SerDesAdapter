@@ -7,6 +7,8 @@ project(SerDesAdapterBaseNodesTests VERSION 1.0
 set(LIB_NAME SerDesAdapterNodes)
 include_directories(${CMAKE_SOURCE_DIR})
 include_directories(${CMAKE_SOURCE_DIR}/../../gen/SourceCPP)
+include_directories(${CMAKE_SOURCE_DIR}/../../gen/SourceCPP/details)
+include_directories(${CMAKE_SOURCE_DIR}/../../gen/SourceCPP/third_party)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 

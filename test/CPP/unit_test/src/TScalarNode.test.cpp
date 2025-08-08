@@ -11,7 +11,7 @@ TEST_CASE("TScalarNode class tests") {
     testNode.init(reinterpret_cast<uint8_t*>(testRawData1.data()) + 10);
     WHEN("Writing 4 bytes to the test object") {
       testNode.writeInt32(0xC0DE'ABCD);
-      THEN("10, 11, 12, 13 bytes of raw data array are chenged") {
+      THEN("10, 11, 12, 13 bytes of raw data array are changed") {
         REQUIRE(testRawData1.at(10) == 0xCD);
         REQUIRE(testRawData1.at(11) == 0xAB);
         REQUIRE(testRawData1.at(12) == 0xDE);
