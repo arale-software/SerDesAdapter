@@ -16,11 +16,11 @@
 #include <stdint.h>
 
 #ifdef __SIZEOF_INT128__
-  using int128_t = __int128_t;
-  using uint128_t = __uint128_t;
-  #define INT128_CODE(...) __VA_ARGS__
+using int128_t = __int128_t;
+using uint128_t = __uint128_t;
+#define INT128_CODE(...) __VA_ARGS__
 #else
-  #define INT128_CODE(...)
+#define INT128_CODE(...)
 #endif
 
 ///////////////////////////////////////////////////////////
@@ -33,18 +33,65 @@ class TBaseNode {
   enum class EBytesOrder : bool { bigEndian = 0, littleEndian = 1 };
 
  protected:
-  EBytesOrder m_endianess{EBytesOrder::littleEndian};
-  size_t m_arraySize{1};
-  size_t m_countBytes{1};
+  EBytesOrder m_endianess{EBytesOrder::littleEndian};  //!< Refers to the byte order in which multi-byte data types
+  size_t m_arraySize{1};                               //!< TODO size for Array-type nodes
+  size_t m_countBytes{1};                              //!< Sizeof node data
 
  public:
+  /**
+   * @brief Construct a new TBaseNode object
+   * @attention DEFAULT CTOR DELETED
+   *
+   */
   TBaseNode() = delete;
-  TBaseNode(EBytesOrder littleEndian, const size_t& arraySize, const size_t& countBytes) : m_endianess{littleEndian}, m_arraySize{arraySize}, m_countBytes{countBytes} {};
 
+  /**
+   * @brief Construct a new TBaseNode object
+   *
+   * @param littleEndian
+   * @param arraySize
+   * @param countBytes
+   */
+  TBaseNode(EBytesOrder endianess, const size_t& arraySize, const size_t& countBytes) : m_endianess{endianess}, m_arraySize{arraySize}, m_countBytes{countBytes} {};
+
+  /**
+   * @brief Destroy the TBaseNode object
+   * @note default virtual
+   */
   virtual ~TBaseNode() = default;
+
+  /**
+   * @brief Construct a new TBaseNode object
+   * @note default
+   *
+   * @param other
+   */
   TBaseNode(const TBaseNode& other) = default;
+
+  /**
+   * @brief Construct a new TBaseNode object
+   * @note default
+   *
+   * @param other
+   */
   TBaseNode(TBaseNode&& other) = default;
+
+  /**
+   * @brief Assignment operator
+   * @note default
+   *
+   * @param other
+   * @return TBaseNode&
+   */
   TBaseNode& operator=(const TBaseNode& other) = default;
+
+  /**
+   * @brief Move operator
+   * @note default
+   *
+   * @param other
+   * @return TBaseNode&
+   */
   TBaseNode& operator=(TBaseNode&& other) = default;
 
   virtual void readFloat(float& dst) const = 0;
@@ -75,6 +122,7 @@ class TBaseNode {
 
   virtual void* data() noexcept = 0;
   virtual size_t init(void* pInit) noexcept = 0;
+  virtual void reinit(void* pInit) noexcept = 0;
   virtual void update() = 0;
   size_t sizeBytes() const noexcept { return m_countBytes; }
 
@@ -89,9 +137,9 @@ class TBaseNode {
   virtual operator int64_t() const = 0;
   INT128_CODE(virtual operator int128_t() const = 0;)
   virtual operator uint8_t() const = 0;
-  virtual operator uint16_t () const = 0;
-  virtual operator uint32_t () const = 0;
-  INT128_CODE(virtual operator uint128_t () const = 0;)
+  virtual operator uint16_t() const = 0;
+  virtual operator uint32_t() const = 0;
+  INT128_CODE(virtual operator uint128_t() const = 0;)
 };
 
 #endif  // __T_BASE_NODE_HPP_1UV98Z4DK9ZI__

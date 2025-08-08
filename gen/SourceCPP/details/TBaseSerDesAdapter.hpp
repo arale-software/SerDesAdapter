@@ -29,6 +29,7 @@ class TBaseSerDesAdapter {
   TBaseSerDesAdapter& operator=(const TBaseSerDesAdapter& other) = default;
   TBaseSerDesAdapter& operator=(TBaseSerDesAdapter&& other) = default;
   virtual void init(void* pInit) = 0;
+  virtual void reinit(void* pInit) = 0;
   virtual void update() = 0;
   virtual TBaseNodePtrMap& getNodeMap() = 0;
 };

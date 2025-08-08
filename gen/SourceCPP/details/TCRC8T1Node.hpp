@@ -28,8 +28,8 @@ class TCRC8T1Node : public TScalarNode<uint8_t> {
 
  public:
   TCRC8T1Node() = delete;
-  TCRC8T1Node(const uint8_t crcpoly = 0x00, const uint8_t crcinit = 0x00, EBytesOrder littleEndian = EBytesOrder::littleEndian)
-      : TScalarNode<uint8_t>(littleEndian, 1), m_pBeginNode{nullptr}, m_pEndNode{nullptr}, m_distanceBytes{0}, m_crc{crcpoly, crcinit} {}
+  TCRC8T1Node(const uint8_t crcpoly = 0x00, const uint8_t crcinit = 0x00, EBytesOrder endianess = EBytesOrder::littleEndian)
+      : TScalarNode<uint8_t>(endianess, 1), m_pBeginNode{nullptr}, m_pEndNode{nullptr}, m_distanceBytes{0}, m_crc{crcpoly, crcinit} {}
 
   virtual ~TCRC8T1Node() = default;
   TCRC8T1Node(const TCRC8T1Node& other) = default;
@@ -42,11 +42,15 @@ class TCRC8T1Node : public TScalarNode<uint8_t> {
     writeUnsignedInt8(m_crc.checksum());
   }
 
+  using TScalarNode<uint8_t>::init;
+
   size_t init(void* pInit, TBaseNode* pBeginNode, TBaseNode* pEndNode) noexcept {
     m_pBeginNode = pBeginNode;
     m_pEndNode = pEndNode;
     m_distanceBytes = reinterpret_cast<char*>(pEndNode->data()) - reinterpret_cast<char*>(pBeginNode->data()) + pEndNode->sizeBytes();
-    return TScalarNode<uint8_t>::init(pInit);
+    auto result = init(pInit);
+    update();  // FIXME you can delete it if not need?
+    return result;
   }
 
  private:

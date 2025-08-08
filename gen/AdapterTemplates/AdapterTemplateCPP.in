@@ -37,6 +37,12 @@ class $class_name : public TBaseSerDesAdapter {
   virtual TBaseNodePtrMap& getNodeMap() override {
     return m_nodesHashTable;
   }
+
+  virtual void reinit(void* pInit) override {
+    for(auto&& node : m_nodesHashTable){
+      node->reinit(pInit);
+    }
+  }
 };
 
 #endif // $header_guard
