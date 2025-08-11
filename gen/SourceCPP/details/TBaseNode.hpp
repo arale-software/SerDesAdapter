@@ -10,32 +10,71 @@
  */
 #ifndef __T_BASE_NODE_HPP_1UV98Z4DK9ZI__
 #define __T_BASE_NODE_HPP_1UV98Z4DK9ZI__
-
-#include <cstddef>
+#pragma once
 
 #include <stdint.h>
+#include <concepts>
 
-#ifdef __SIZEOF_INT128__
-using int128_t = __int128_t;
-using uint128_t = __uint128_t;
-#define INT128_CODE(...) __VA_ARGS__
-#else
-#define INT128_CODE(...)
-#endif
+/**
+ * @brief The concept defines the supported data types
+ * for the read and write methods of the base class.
+ * @note int types, floating point, 8 bytes max size
+ * @tparam T
+ */
+template <typename T>
+concept CSupportedBaseNodeType =                            //
+    (std::is_floating_point_v<T> || std::is_integral_v<T>)  //
+    &&                                                      //
+    (sizeof(T) >= 1 && sizeof(T) <= 8)                      //
+    &&                                                      //
+    !std::is_same_v<T, bool>;                               //
 
+/**
+ * @brief Macro for data getter definition
+ * @example virtual void read_int8_t(int8_t&) const
+ *
+ */
+#define DEF_DECL_READ_TYPE_METHOD(__TYPE__) virtual void read_##__TYPE__(__TYPE__& dst) const
+
+/**
+ * @brief Macro for data setter definition
+ * @example virtual void write_int8_t(int8_t)
+ *
+ */
+#define DEF_DECL_WRITE_TYPE_METHOD(__TYPE__) virtual void write_##__TYPE__(__TYPE__ src)
+
+/**
+ * @brief Macro helper for read(T) function
+ *
+ */
+#define DEF_READ_METHOD_CE_READ_TYPE(__TYPE__) \
+  if constexpr (std::is_same_v<T, __TYPE__>) { \
+    read_##__TYPE__(dst);                      \
+  }
+
+/**
+ * @brief Macro helper for write(T) function
+ *
+ */
+#define DEF_WRITE_METHOD_CE_WRITE_TYPE(__TYPE__) \
+  if constexpr (std::is_same_v<T, __TYPE__>) {   \
+    write_##__TYPE__(src);                       \
+  }
 ///////////////////////////////////////////////////////////
-/// @brief TBaseNode
-/// abstract class
-/// Setters and getters are more preferable then operators
-/// Use init function after ctor for proper node usege
+/**
+ * @class TBaseNode
+ * /// Abstract class ///
+ * Setters and getters are more preferred than operators.
+ * Use the init function after the constructor for proper node usage.
+ */
 class TBaseNode {
  public:
   enum class EBytesOrder : bool { bigEndian = 0, littleEndian = 1 };
 
  protected:
-  EBytesOrder m_endianess{EBytesOrder::littleEndian};  //!< Refers to the byte order in which multi-byte data types
-  size_t m_arraySize{1};                               //!< TODO size for Array-type nodes
-  size_t m_countBytes{1};                              //!< Sizeof node data
+  EBytesOrder m_endianness{EBytesOrder::littleEndian};  //!< Refers to the byte order in which multi-byte data types
+  size_t m_array_size{1};                               //!< TODO size for array-type nodes
+  size_t m_byte_count{1};                               //!< Sizeof node data
 
  public:
   /**
@@ -47,18 +86,172 @@ class TBaseNode {
 
   /**
    * @brief Construct a new TBaseNode object
-   *
-   * @param littleEndian
-   * @param arraySize
-   * @param countBytes
+   * @param endianness    byte order
+   * @param array_size    size for array-type nodes
+   * @param byte_count    size of node data
    */
-  TBaseNode(EBytesOrder endianess, const size_t& arraySize, const size_t& countBytes) : m_endianess{endianess}, m_arraySize{arraySize}, m_countBytes{countBytes} {};
+  TBaseNode(EBytesOrder endianness, const size_t& array_size, const size_t& byte_count) : m_endianness{endianness}, m_array_size{array_size}, m_byte_count{byte_count} {};
 
   /**
    * @brief Destroy the TBaseNode object
    * @note default virtual
    */
   virtual ~TBaseNode() = default;
+
+  /**
+   * @brief Getter for the size of the node data
+   *
+   *  @return The size of the data in bytes
+   */
+  virtual size_t bytesize() const noexcept { return m_byte_count; }
+
+  /**
+   * @brief The method initializes the node by setting its pointer to the desired segment of the data array.
+   * @implements It is assumed that inherited classes will record the default value when this function is used.
+   * @param p_init     pointer to the desired segment
+   * @return size_t   the count of bytes used by the current node.
+   */
+  virtual size_t init(void* p_init) noexcept = 0;
+
+  /**
+   * @brief Think about reallocation original data array
+   * @todo configure function?
+   * @todo same for init? return size_t?
+   * @todo maybe pos?
+   * @param p_init
+   */
+  // TODO virtual void reinit(void* p_init) noexcept = 0;  // FIXME
+
+  /**
+   * @brief Getter for raw pointer to the original fragment of data.
+   *
+   * @return void* data pointer
+   */
+  virtual void* data() noexcept = 0;
+
+  /**
+   * @brief Recalculation of values for custom node types.
+   *
+   */
+  virtual void update() = 0;
+
+  /**
+   * @brief Getters for supported data types
+   *
+   */
+  DEF_DECL_READ_TYPE_METHOD(float) = 0;
+  DEF_DECL_READ_TYPE_METHOD(double) = 0;
+  DEF_DECL_READ_TYPE_METHOD(int8_t) = 0;
+  DEF_DECL_READ_TYPE_METHOD(int16_t) = 0;
+  DEF_DECL_READ_TYPE_METHOD(int32_t) = 0;
+  DEF_DECL_READ_TYPE_METHOD(int64_t) = 0;
+  DEF_DECL_READ_TYPE_METHOD(uint8_t) = 0;
+  DEF_DECL_READ_TYPE_METHOD(uint16_t) = 0;
+  DEF_DECL_READ_TYPE_METHOD(uint32_t) = 0;
+  DEF_DECL_READ_TYPE_METHOD(uint64_t) = 0;
+
+  /**
+   * @brief Setters for supported data types
+   *
+   */
+  DEF_DECL_WRITE_TYPE_METHOD(float) = 0;
+  DEF_DECL_WRITE_TYPE_METHOD(double) = 0;
+  DEF_DECL_WRITE_TYPE_METHOD(int8_t) = 0;
+  DEF_DECL_WRITE_TYPE_METHOD(int16_t) = 0;
+  DEF_DECL_WRITE_TYPE_METHOD(int32_t) = 0;
+  DEF_DECL_WRITE_TYPE_METHOD(int64_t) = 0;
+  DEF_DECL_WRITE_TYPE_METHOD(uint8_t) = 0;
+  DEF_DECL_WRITE_TYPE_METHOD(uint16_t) = 0;
+  DEF_DECL_WRITE_TYPE_METHOD(uint32_t) = 0;
+  DEF_DECL_WRITE_TYPE_METHOD(uint64_t) = 0;
+
+  /**
+   * @brief Universal getter for supported data types
+   *
+   * @tparam T    CSupportedBaseNodeType concept data type
+   * @param dst   The variable that the data will be written into.
+   */
+  template <CSupportedBaseNodeType T>
+  void read_node(T& dst) const {
+    DEF_READ_METHOD_CE_READ_TYPE(float)     //
+    DEF_READ_METHOD_CE_READ_TYPE(double)    //
+    DEF_READ_METHOD_CE_READ_TYPE(int8_t)    //
+    DEF_READ_METHOD_CE_READ_TYPE(int16_t)   //
+    DEF_READ_METHOD_CE_READ_TYPE(int32_t)   //
+    DEF_READ_METHOD_CE_READ_TYPE(int64_t)   //
+    DEF_READ_METHOD_CE_READ_TYPE(uint8_t)   //
+    DEF_READ_METHOD_CE_READ_TYPE(uint16_t)  //
+    DEF_READ_METHOD_CE_READ_TYPE(uint32_t)  //
+    DEF_READ_METHOD_CE_READ_TYPE(uint64_t)  //
+  }
+
+  /**
+   * @brief Universal setter for supported data types
+   *
+   * @tparam T    CSupportedBaseNodeType concept data type
+   * @param src   A variable whose value is written to by a pointer to the data part of a node.
+   */
+  template <CSupportedBaseNodeType T>
+  void write_node(T& src) const {
+    DEF_WRITE_METHOD_CE_WRITE_TYPE(float)     //
+    DEF_WRITE_METHOD_CE_WRITE_TYPE(double)    //
+    DEF_WRITE_METHOD_CE_WRITE_TYPE(int8_t)    //
+    DEF_WRITE_METHOD_CE_WRITE_TYPE(int16_t)   //
+    DEF_WRITE_METHOD_CE_WRITE_TYPE(int32_t)   //
+    DEF_WRITE_METHOD_CE_WRITE_TYPE(int64_t)   //
+    DEF_WRITE_METHOD_CE_WRITE_TYPE(uint8_t)   //
+    DEF_WRITE_METHOD_CE_WRITE_TYPE(uint16_t)  //
+    DEF_WRITE_METHOD_CE_WRITE_TYPE(uint32_t)  //
+    DEF_WRITE_METHOD_CE_WRITE_TYPE(uint64_t)  //
+  }
+
+  /**
+   * @brief A pointer, an array of data to which the pointer will be written from the data part of the node
+   *
+   * @param p_dst poiner   array data pointer
+   * @param byte_count    size of data to write
+   * @param pos           position to write
+   */
+  virtual void read_data(void* p_dst, size_t byte_count, size_t pos = 0) const = 0;
+
+  /**
+   * @brief A pointer is an array of data that the pointer will write to the data portion of the node.
+   *
+   * @param p_src source   array data pointer
+   * @param byte_count    size of data to write
+   * @param pos           position to write
+   */
+  virtual void write_data(const void* p_src, size_t byte_count, size_t pos = 0) = 0;
+
+  /**
+   * @brief Converts a string to the target data type for the node
+   *
+   * @param str     original string
+   * @param base    integer number representation
+   */
+  virtual void from_string(const char* str, int32_t base = 10) = 0;
+
+  /**
+   * @brief Converts a target data type for the node to the string
+   *
+   * @return const char*    string data representation
+   */
+  virtual const char* to_string() const = 0;
+
+  /**
+   * @brief scalar type operators for node
+   *
+   */
+  virtual operator float() const = 0;
+  virtual operator double() const = 0;
+  virtual operator int8_t() const = 0;
+  virtual operator int16_t() const = 0;
+  virtual operator int32_t() const = 0;
+  virtual operator int64_t() const = 0;
+  virtual operator uint8_t() const = 0;
+  virtual operator uint16_t() const = 0;
+  virtual operator uint32_t() const = 0;
+  virtual operator uint64_t() const = 0;
 
   /**
    * @brief Construct a new TBaseNode object
@@ -93,53 +286,6 @@ class TBaseNode {
    * @return TBaseNode&
    */
   TBaseNode& operator=(TBaseNode&& other) = default;
-
-  virtual void readFloat(float& dst) const = 0;
-  virtual void readDouble(double& dst) const = 0;
-  virtual void readInt8(int8_t& dst) const = 0;
-  virtual void readInt16(int16_t& dst) const = 0;
-  virtual void readInt32(int32_t& dst) const = 0;
-  virtual void readInt64(int64_t& dst) const = 0;
-  INT128_CODE(virtual void readInt128(int128_t& dst) const = 0;)
-  virtual void readUnsignedInt8(uint8_t& dst) const = 0;
-  virtual void readUnsignedInt16(uint16_t& dst) const = 0;
-  virtual void readUnsignedInt32(uint32_t& dst) const = 0;
-  INT128_CODE(virtual void readUnsignedInt128(uint128_t& dst) const = 0;)
-  virtual void readData(void* pDst, size_t countBytes, size_t posArray = 0) const = 0;
-
-  virtual void writeFloat(float src) = 0;
-  virtual void writeDouble(double src) = 0;
-  virtual void writeInt8(int8_t src) = 0;
-  virtual void writeInt16(int16_t src) = 0;
-  virtual void writeInt32(int32_t src) = 0;
-  virtual void writeInt64(int64_t src) = 0;
-  INT128_CODE(virtual void writeInt128(int128_t src) = 0;)
-  virtual void writeUnsignedInt8(uint8_t src) = 0;
-  virtual void writeUnsignedInt16(uint16_t src) = 0;
-  virtual void writeUnsignedInt32(uint32_t src) = 0;
-  INT128_CODE(virtual void writeUnsignedInt128(uint128_t src) = 0;)
-  virtual void writeData(const void* pSrc, size_t countBytes, size_t posArray = 0) = 0;
-
-  virtual void* data() noexcept = 0;
-  virtual size_t init(void* pInit) noexcept = 0;
-  virtual void reinit(void* pInit) noexcept = 0;
-  virtual void update() = 0;
-  size_t sizeBytes() const noexcept { return m_countBytes; }
-
-  virtual void fromString(const char* str, int32_t base = 10) = 0;
-  virtual std::string toString() = 0;
-
-  virtual operator float() const = 0;
-  virtual operator double() const = 0;
-  virtual operator int8_t() const = 0;
-  virtual operator int16_t() const = 0;
-  virtual operator int32_t() const = 0;
-  virtual operator int64_t() const = 0;
-  INT128_CODE(virtual operator int128_t() const = 0;)
-  virtual operator uint8_t() const = 0;
-  virtual operator uint16_t() const = 0;
-  virtual operator uint32_t() const = 0;
-  INT128_CODE(virtual operator uint128_t() const = 0;)
 };
 
 #endif  // __T_BASE_NODE_HPP_1UV98Z4DK9ZI__

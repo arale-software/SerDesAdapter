@@ -21,7 +21,7 @@ class $class_name : public TBaseSerDesAdapter {
 
   $nodes_definitions
 
-  virtual void init(void* pInit) override {
+  virtual void init(void* p_init) override {
     size_t pos = 0;
     $nodes_init
   }
@@ -36,12 +36,6 @@ class $class_name : public TBaseSerDesAdapter {
 
   virtual TBaseNodePtrMap& getNodeMap() override {
     return m_nodesHashTable;
-  }
-
-  virtual void reinit(void* pInit) override {
-    for(auto&& node : m_nodesHashTable){
-      node->reinit(pInit);
-    }
   }
 };
 

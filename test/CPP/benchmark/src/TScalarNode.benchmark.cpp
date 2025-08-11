@@ -10,7 +10,7 @@ static void BM_TScalarNode_WriteInt32Operation(benchmark::State& state) {
   TScalarNode<int32_t> testNode{TBaseNode::EBytesOrder::littleEndian, 1};
   testNode.init(reinterpret_cast<uint8_t*>(testRawData1.data()) + 10);
   for (auto _ : state) {
-    testNode.writeInt32(0xC0DE'ABCD);
+    testNode.write_int32_t(0xC0DE'ABCD);
   }
 }
 BENCHMARK(BM_TScalarNode_WriteInt32Operation);

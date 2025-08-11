@@ -11,6 +11,7 @@
 
 #ifndef __T_BASE_SER_DES_ADAPTER_HPP_XT6CLJEHL75C__
 #define __T_BASE_SER_DES_ADAPTER_HPP_XT6CLJEHL75C__
+#pragma once
 
 #include <tsl/array_map.h>
 
@@ -18,8 +19,15 @@
 
 ///////////////////////////////////////////////////////////
 /// @brief TBaseSerDesAdapter
+/**
+ * @note The most efficient hash table by string key
+ */
 using TBaseNodePtrMap = tsl::array_map<char, TBaseNode*>;
 
+/**
+ * @class Base of generic class
+ *
+ */
 class TBaseSerDesAdapter {
  public:
   TBaseSerDesAdapter() = default;
@@ -28,9 +36,32 @@ class TBaseSerDesAdapter {
   TBaseSerDesAdapter(TBaseSerDesAdapter&& other) = default;
   TBaseSerDesAdapter& operator=(const TBaseSerDesAdapter& other) = default;
   TBaseSerDesAdapter& operator=(TBaseSerDesAdapter&& other) = default;
-  virtual void init(void* pInit) = 0;
-  virtual void reinit(void* pInit) = 0;
+
+  /**
+   * @brief The method initializes the nodes by setting its pointer to the desired segment of the data array.
+   *
+   * @param p_init     begin pointer to the desired segment
+   */
+  virtual void init(void* p_init) = 0;
+
+  /**
+   * @brief think about realloc
+   *
+   * @param p_init   begin pointer to the desired segment
+   */
+  // TODO virtual void reinit(void* p_init) = 0;
+
+  /**
+   * @brief Recalculation of values for custom nodes.
+   *
+   */
   virtual void update() = 0;
+
+  /**
+   * @brief Get the Node Map object
+   * @implements [string key] = TBaseNode pointer
+   * @return TBaseNodePtrMap&
+   */
   virtual TBaseNodePtrMap& getNodeMap() = 0;
 };
 

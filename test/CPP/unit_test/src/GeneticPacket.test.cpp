@@ -18,12 +18,12 @@ class TGenericSerDesAdapter : public TBaseSerDesAdapter {
   TScalarNode<float> m_field3_float{TBaseNode::EBytesOrder::littleEndian, 1};
   TCRC8T1Node m_field4_crc8{0xff, 0xab, TBaseNode::EBytesOrder::littleEndian};
 
-  virtual void init(void* pInit) override {
+  virtual void init(void* p_init) override {
     size_t pos = 0;
-    pos += m_field1_u8.init(reinterpret_cast<uint8_t*>(pInit) + pos, 11);
-    pos += m_field2_u8.init(reinterpret_cast<uint8_t*>(pInit) + pos, 11);
-    pos += m_field3_float.init(reinterpret_cast<uint8_t*>(pInit) + pos, 33.33);
-    pos += m_field4_crc8.init(reinterpret_cast<uint8_t*>(pInit) + pos, &m_field1_u8, &m_field3_float);
+    pos += m_field1_u8.init(reinterpret_cast<uint8_t*>(p_init) + pos, 11);
+    pos += m_field2_u8.init(reinterpret_cast<uint8_t*>(p_init) + pos, 11);
+    pos += m_field3_float.init(reinterpret_cast<uint8_t*>(p_init) + pos, 33.33);
+    pos += m_field4_crc8.init(reinterpret_cast<uint8_t*>(p_init) + pos, &m_field1_u8, &m_field3_float);
   }
 
   virtual void update() override { m_field4_crc8.update(); }
@@ -36,12 +36,6 @@ class TGenericSerDesAdapter : public TBaseSerDesAdapter {
   };
 
   virtual TBaseNodePtrMap& getNodeMap() override { return m_nodesHashTable; }
-
-  virtual void reinit(void* pInit) override {
-    for (auto&& node : m_nodesHashTable) {
-      node->reinit(pInit);
-    }
-  }
 };
 
 TEST_CASE("Generic class basic tests") {
@@ -61,15 +55,21 @@ TEST_CASE("Generic class basic tests") {
           REQUIRE(initArray == controlArray);
         }
         AND_WHEN("Node fields method 'read' executed") {
-          REQUIRE_NOTHROW(genericObject.m_field1_u8.readUnsignedInt8(controlValue1_u8));
-          REQUIRE_NOTHROW(genericObject.m_field2_u8.readUnsignedInt8(controlValue2_u8));
-          REQUIRE_NOTHROW(genericObject.m_field3_float.readFloat(controlValue3_f));
-          REQUIRE_NOTHROW(genericObject.m_field4_crc8.readUnsignedInt8(controlValue4_crc8));
+          REQUIRE_NOTHROW(genericObject.m_field1_u8.read_node(controlValue1_u8));
+          REQUIRE_NOTHROW(genericObject.m_field2_u8.read_node(controlValue2_u8));
+          REQUIRE_NOTHROW(genericObject.m_field3_float.read_node(controlValue3_f));
+          REQUIRE_NOTHROW(genericObject.m_field4_crc8.read_node(controlValue4_crc8));
           THEN("Control values are same with init values") {
             REQUIRE(controlValue1_u8 == 11);
             REQUIRE(controlValue2_u8 == 11);
             REQUIRE(std::abs(controlValue3_f - 33.33f) < 0.01);
             REQUIRE(controlValue4_crc8 == 0xD6);
+          }
+          AND_THEN("Read values from hash map are same") {
+            controlValue3_f = 0.0f;
+            genericObject.m_nodesHashTable.at("field3_float")->read_node(controlValue3_f);
+            printf("=== %f ====\n", controlValue3_f);
+            REQUIRE(std::abs(controlValue3_f - 33.33f) < 0.01);
           }
         }
       }
